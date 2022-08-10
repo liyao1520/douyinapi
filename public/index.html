@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>抖音弹幕</title>
+    <style>
+      body,
+      html {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-size: 14px;
+      }
+      #loading {
+        position: fixed;
+      }
+      #app {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+
+        padding-left: 30px;
+      }
+      .item {
+        display: flex;
+        padding: 10px 0;
+        align-items: center;
+      }
+      .item div,
+      img {
+        display: inline-block;
+      }
+      img {
+        width: 20px;
+        height: 20px;
+        padding: 0 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="loading">等待加载...</p>
+    <div id="app"></div>
+    <script>
+      const MAX_COUNT = 100;
+      const io = new WebSocket("ws://localhost:8888");
+      const app = document.querySelector("#app");
+      const loading = document.querySelector("#loading");
+      let count = 0;
+      io.onmessage = function (message) {
+        loading.remove();
+        if (++count === MAX_COUNT) {
+          app.innerHTML = "";
+          count = 0;
+        }
+        const { html } = JSON.parse(message.data);
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = html;
+        app.appendChild(div);
+        document.documentElement.scrollTop = 10000000000000;
+      };
+    </script>
+  </body>
+</html>
